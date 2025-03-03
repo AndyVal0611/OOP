@@ -19,7 +19,7 @@ class Electronics(Product):
         self.warranty_period = warranty_period
 
     def get_info(self):
-        return f'{self.name} (₱{self.price}) - Warranty: {self.warranty_period} years'
+        return f'Electronics: {self.name}, Price: ₱{self.price}, Year of Warranty: {self.warranty_period}'
 
 
 # Subclass Clothing
@@ -29,7 +29,7 @@ class Clothing(Product):
         self.size = size
 
     def get_info(self):
-        return f'{self.name} (₱{self.price}) - Size: {self.size}'
+        return f'Clothing: {self.name}, Price: ₱{self.price}, Size: {self.size}'
 
 
 # ShoppingCart class
@@ -39,39 +39,84 @@ class ShoppingCart:
 
     def add_to_cart(self, product):
         self.cart.append(product)
+        print(f'Added to cart: {product.name}')
 
     def view_cart(self):
-        print('\nShopping Cart:')
-        for index, product in enumerate(self.cart, start=1):
-            print(f'{index}. {product.get_info()}')
+        if not self.cart:
+            print('\nYour cart is empty.')
+        else:
+            print('\nShopping Cart:')
+            for index, product in enumerate(self.cart, start=1):
+                print(f'{index}. {product.get_info()}')
 
     def checkout(self):
-        total_price = sum(product.price for product in self.cart)
-        print(f'Total Price: ₱{total_price}')
+        if not self.cart:
+            print('\nYour cart is empty. Add items before checking out.')
+        else:
+            total_price = sum(product.price for product in self.cart)
+            print(f'\nTotal Price: ₱{total_price}')
+            print('Checkout complete. Thank you for shopping!')
 
 
-# User interaction
-def main():
+# Initialize Product objects
+electronics1 = Electronics("Lenovo ThinkPad Laptop", 50000, 2)
+electronics2 = Electronics("iPhone 16", 54000, 1)
+electronics3 = Electronics("Huawei MatePad T10", 35500, 1)
+clothing1 = Clothing("H&M Flare Jeans (Dark Blue)", 900, "S")
+clothing2 = Clothing("Levi's Denim Jacket", 1800, "L")
+clothing3 = Clothing("Guess Woven Faux Suede Trench Coat", 2800, "XL")
+
+products = [electronics1, electronics2, electronics3, clothing1, clothing2, clothing3]
+
+
+# Display all products instantly
+print("\nWELCOME TO AV DEPARTMENT STORE!"
+      "\n...a store of everyone's essentials")
+print('\nAvailable Products:')
+for idx, product in enumerate(products, start=1):
+    print(f'{idx}. {product.get_info()}')
+
+
+# Get user choice for adding products
+def select_products(cart):
+    try:
+        selections = input('Enter product numbers to add (comma-separated): ')
+        selected_indexes = [int(i) - 1 for i in selections.split(',')]
+        for index in selected_indexes:
+            if 0 <= index < len(products):
+                cart.add_to_cart(products[index])
+            else:
+                print(f'Invalid selection: {index + 1}')
+    except ValueError:
+        print('Invalid input. Please enter numbers separated by commas.')
+
+
+# Main loop for user interaction
+def start_shopping():
     cart = ShoppingCart()
 
-    print('Enter details for two electronics items:')
-    for _ in range(2):
-        name = input('Enter product name: ')
-        price = int(input('Enter price: '))
-        warranty = int(input('Enter warranty period (years): '))
-        cart.add_to_cart(Electronics(name, price, warranty))
+    while True:
+        print('\nMenu:')
+        print('1. Add products to cart')
+        print('2. View cart')
+        print('3. Checkout')
+        print('4. Exit')
 
-    print('\nEnter details for two clothing items:')
-    for _ in range(2):
-        name = input('Enter product name: ')
-        price = int(input('Enter price: '))
-        size = input('Enter size: ')
-        cart.add_to_cart(Clothing(name, price, size))
+        try:
+            choice = int(input('Enter your choice (1-4): '))
+            if choice == 1:
+                select_products(cart)
+            elif choice == 2:
+                cart.view_cart()
+            elif choice == 3:
+                cart.view_cart()
+                cart.checkout()
+            elif choice == 4:
+                print('Thank you for shopping! Have a great day!')
+                break
+            else:
+                print('Invalid choice. Please select a number between 1 and 4.')
+        except ValueError:
+            print('Invalid input. Please enter a number.')
 
-    # View cart and checkout
-    cart.view_cart()
-    cart.checkout()
-
-
-if __name__ == '__main__':
-    main()
+start_shopping()
